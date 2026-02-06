@@ -1,0 +1,24 @@
+{
+  "obsidian_path": "/path/to/your/obsidian/vault/compass",
+  "folders": {
+    "charts": "charts",
+    "logbook": "logbook",
+    "harbor": "harbor",
+    "navigation": "navigation",
+    "template": "template"
+  },
+  "assistant": {
+    "name": "Compass",
+    "version": "1.0.0"
+  },
+  "commands": {
+    "@navigation": "生成今日sounding",
+    "@insight": "探讨重点话题",
+    "@fleeting": "探讨临时话题",
+    "@card": "记录知识卡片",
+    "@map": "生成知识图谱",
+    "@harbor": "归档到长期知识库",
+    "@analysis": "生成分析报告",
+    "@course": "生成今日course文档"
+  }
+}
