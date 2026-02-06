@@ -9,7 +9,35 @@
   },
   "assistant": {
     "name": "Compass",
-    "version": "1.0.0"
+    "version": "2.0.0"
+  },
+  "api": {
+    "enabled": false,
+    "provider": "claude",
+    "api_key": "your-api-key-here",
+    "base_url": "",
+    "model": "claude-sonnet-4-5-20250929",
+    "note": "API配置为可选项，用于独立运行模式。在Claude Code中使用时无需配置。",
+    "supported_providers": {
+      "claude": {
+        "model": "claude-sonnet-4-5-20250929",
+        "base_url": "https://api.anthropic.com"
+      },
+      "openai": {
+        "model": "gpt-5.3-codex",
+        "base_url": "https://api.openai.com/v1",
+        "note": "推荐使用 gpt-5.3-codex（最新）或 gpt-5.2-codex"
+      },
+      "deepseek": {
+        "model": "deepseek-chat",
+        "base_url": "https://api.deepseek.com/v1"
+      },
+      "custom": {
+        "model": "your-model-name",
+        "base_url": "https://your-api-endpoint.com/v1",
+        "note": "支持OpenAI兼容的API接口"
+      }
+    }
   },
   "commands": {
     "@navigation": "生成今日sounding",

@@ -1,0 +1,17 @@
+# Knowledge Compass 依赖包
+
+# 核心依赖（基础功能）
+# 无额外依赖 - 使用Python标准库
+
+# 可选依赖（API模式）
+# 如果想使用独立API模式，取消下面的注释并安装：
+
+# 推荐使用 OpenAI SDK（支持多种兼容的API）
+# openai>=1.0.0      # 支持 OpenAI, DeepSeek 等兼容接口
+
+# 或者使用原生SDK
+# anthropic>=0.18.0  # Claude API
+# requests>=2.31.0   # 通用HTTP请求
+
+# 使用示例：
+# pip install openai  # 安装后即可使用 OpenAI、DeepSeek 等服务
