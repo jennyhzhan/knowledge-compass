@@ -197,12 +197,16 @@ insight / fleeting
             self.write_file(card_template, template_content)
 
         # 创建初始course文档（如果不存在任何course）
+        # 使用昨天日期，这样第一次执行@navigation时能正常读取
         courses = list(self.navigation.glob("*_course.md"))
         if not courses:
-            initial_course = self.navigation / f"{self.today}_course.md"
+            initial_course = self.navigation / f"{self.yesterday}_course.md"
             template = self.read_file(course_template)
             if template:
                 self.write_file(initial_course, template)
+                print(f"已创建初始course文档: {initial_course}")
+                print(f"请打开此文件填写你的 Task（长期目标）和 Focus（近期关注）")
+                print(f"填写完成后，即可执行 @navigation 开始今日工作\n")
 
     def read_file(self, filepath):
         """读取文件内容"""
@@ -450,9 +454,28 @@ insight / fleeting
         print(f"Obsidian路径: {self.obsidian_path}")
         print(f"运行模式: {'API模式' if self.use_api else 'Claude Code模式'}")
 
+        # 检查是否有任何course文档
+        all_courses = list(self.navigation.glob("*_course.md"))
+        if not all_courses:
+            print("\n[首次使用提示]")
+            print("   未找到任何course文档。")
+            print("   系统会在初始化时自动创建昨天日期的course模板。")
+            print("   请打开 navigation/ 文件夹中的course文档，")
+            print("   填写你的 Task（长期目标）和 Focus（近期关注）后，")
+            print("   再执行 @navigation 开始使用。")
+
+        # 检查昨天的course是否存在且已填写
+        yesterday_course = self.navigation / f"{self.yesterday}_course.md"
+        if yesterday_course.exists():
+            content = self.read_file(yesterday_course)
+            if content and '[在这里填写' in content:
+                print("\n[初始化未完成]")
+                print(f"   发现昨日course文档: {yesterday_course.name}")
+                print("   但还未填写Task和Focus，请先完成填写。")
+
         print(f"\n今日状态:")
-        print(f"   Sounding: {'✓ 已创建' if context['sounding_exists'] else '✗ 未创建'}")
-        print(f"   Course: {'✓ 已创建' if context['course_exists'] else '✗ 未创建'}")
+        print(f"   Sounding: {'已创建' if context['sounding_exists'] else '未创建'}")
+        print(f"   Course: {'已创建' if context['course_exists'] else '未创建'}")
 
         print(f"\n当前Focus:")
         print(context['focus'] if context['focus'] else "   未找到")
@@ -474,11 +497,11 @@ insight / fleeting
 
         context = self.get_context_info()
 
-        print(f"\n📍 当前Focus:")
+        print(f"\n当前Focus:")
         print(context.get('focus', '未找到'))
 
         sounding_path = self.create_sounding_draft()
-        print(f"\n✓ 已生成今日sounding草稿: {sounding_path}")
+        print(f"\n已生成今日sounding草稿: {sounding_path}")
 
         if self.use_api:
             print("\n下一步：需要AI搜索Focus相关的最新信息并更新sounding")

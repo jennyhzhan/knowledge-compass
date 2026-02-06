@@ -82,21 +82,45 @@ compass/
 
 ## 方式 A：Claude Code 模式（推荐）
 
-### 你要做的事情
+### 配置步骤
 
 1. 复制配置文件：`config.example.json` → `config.json`
 2. 设置 `obsidian_path` 为你的 Obsidian vault 路径（一个本地文件夹）
 
-   3.（推荐）打开自动生成的 `navigation/YYYY-MM-DD_course.md`，填写你的 Task（长期目标）和 Focus（近期关注）
+### 第一次启动
 
-### 运行方式
+在 Claude Code 中，进入项目目录后运行：
 
-在 Claude Code 中触发指令，例如：
+```bash
+# 方式1：查看状态（推荐）
+python compass.py --status
+
+# 方式2：直接对话
+hi compass, 帮我初始化
+```
+
+系统会自动：
+- 创建文件夹结构（charts, logbook, harbor, navigation, template）
+- 创建模板文件
+- 生成昨天日期的 `navigation/YYYY-MM-DD_course.md`
+
+### 填写初始配置
+
+打开自动生成的 `navigation/昨天日期_course.md`（例如：`2026-02-05_course.md`），填写：
+- **Task（长期目标）**：你希望长期关注和实现的目标
+- **Focus（近期关注）**：最近1-2周重点关注的话题和方向
+
+> **为什么是昨天日期？**
+> 因为 `@navigation` 命令会读取昨天的course来获取Focus，然后生成今天的sounding。填写完成后，即可执行 `@navigation` 开始今天的工作。
+
+### 开始使用
+
+填写完Task和Focus后，在 Claude Code 中触发指令：
 
 ```
-hi compass, 执行 @navigation
-@insight 探讨AI Agent的最新进展
-记录一个关于产品设计的想法
+@navigation              # 生成今日海图
+@insight 探讨AI Agent    # 深度探讨话题
+记录一个产品设计想法      # 记录临时想法
 ```
 
 ---
@@ -216,20 +240,33 @@ export OPENAI_API_KEY="your-deepseek-api-key-here"
 
 ---
 
-### 你要做的事情
+### 配置步骤
 
 1. 复制配置文件：`config.example.json` → `config.json`
 2. 设置 `obsidian_path`
 3. 配置 `api.enabled=true`、`api.provider`、`api.model`，按 provider 填 `base_url`
 4. 安装依赖：`pip install openai` 或 `pip install anthropic`
 5. 设置环境变量注入 API key
-6. 运行命令
 
-### 运行方式
+### 第一次启动
 
 ```bash
+# 初始化并查看状态
 python compass.py --status
-python compass.py @navigation
+```
+
+系统会自动创建文件夹结构、模板文件和昨天日期的course文档。
+
+### 填写初始配置
+
+打开 `navigation/昨天日期_course.md`，填写 Task（长期目标）和 Focus（近期关注）
+
+### 开始使用
+
+```bash
+python compass.py --status      # 查看状态
+python compass.py @navigation   # 生成今日海图
+# 其他命令需要通过API模式或Claude Code交互
 ```
 
 ---
