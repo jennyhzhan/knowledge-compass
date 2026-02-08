@@ -41,6 +41,20 @@ class CompassAssistant:
        - 位于Focus和Reference之间
        - 记录用户的个人认知和思考
        - 会被读取并影响后续分析
+
+    5. 输出风格原则（从config.output_preferences读取）：
+       - 禁止使用emoji表情符号
+       - 保持专业简洁的文字表达
+       - 使用结构化的markdown格式
+       - 用文字标记代替表情符号
+       - 通过get_context_info()获取具体配置
+
+    6. 模板使用原则：
+       - 创建card时优先参考template/card-template.md
+       - 创建course时优先参考template/course-template.md
+       - 创建sounding时优先参考template/sounding-template.md
+       - @analysis深度报告优先参考harbor/frameworks中的分析模板
+       - 执行@analysis前应主动列出可用模板并询问用户选择
     """
 
     def __init__(self, config_path=None):
@@ -285,19 +299,39 @@ insight / fleeting
             'next_actions': parsed.get('next', '').strip(),
             'sounding_exists': (self.charts / f"{self.today}_sounding.md").exists(),
             'course_exists': (self.navigation / f"{self.today}_course.md").exists(),
-            'logbook_path': str(self.logbook / self.today)
+            'logbook_path': str(self.logbook / self.today),
+            'output_preferences': self.config.get('output_preferences', {
+                'use_emoji': False,
+                'style': 'professional',
+                'format': 'structured'
+            }),
+            'analysis_templates': self.get_analysis_templates()
         }
 
         return context
 
     def create_sounding_draft(self, focus_text=None):
-        """创建sounding草稿"""
+        """创建sounding草稿（优先使用template/sounding-template.md格式）"""
         if focus_text is None:
             course = self.get_latest_course()
             parsed = self.parse_course(course)
             focus_text = parsed.get('focus', '未找到Focus信息')
 
-        content = f"""## Focus
+        # 读取模板文件
+        template_path = self.template / 'sounding-template.md'
+        template_content = self.read_file(template_path)
+
+        if template_content:
+            # 使用模板格式，替换Focus部分
+            content = template_content.replace(
+                '[从course文档中自动提取]',
+                focus_text
+            )
+            # 添加生成时间
+            content += f"\n\n---\n生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
+        else:
+            # 模板不存在时使用默认格式
+            content = f"""## Focus
 {focus_text}
 
 ## News Update
@@ -314,7 +348,7 @@ insight / fleeting
         return str(filepath)
 
     def create_knowledge_card(self, title, content, card_type='insight', tags=None):
-        """创建知识卡片"""
+        """创建知识卡片（优先使用template/card-template.md格式）"""
         today_log = self.logbook / self.today
 
         # 确定卡片目录
@@ -348,8 +382,33 @@ insight / fleeting
             with open(filepath, 'a', encoding='utf-8') as f:
                 f.write(card_content)
         else:
-            # 创建新卡片
-            card_content = f"""# {title}
+            # 读取模板文件
+            template_path = self.template / 'card-template.md'
+            template_content = self.read_file(template_path)
+
+            if template_content:
+                # 使用模板格式
+                card_content = f"""# {title}
+
+## 时间
+{datetime.now().strftime("%Y-%m-%d %H:%M")}
+
+## 类型
+{card_type}
+
+{template_content}
+
+**实际内容**：
+{content}
+
+**标签**：{tags_str}
+
+---
+通过Compass助手生成
+"""
+            else:
+                # 模板不存在时使用默认格式
+                card_content = f"""# {title}
 
 ## 时间
 {datetime.now().strftime("%Y-%m-%d %H:%M")}
@@ -388,7 +447,7 @@ insight / fleeting
 
     def create_course_summary(self, summary, next_actions):
         """
-        创建今日course文档
+        创建今日course文档（优先使用template/course-template.md格式）
 
         注意：Course应该保持简洁，聚焦核心
         - Today's Summary: 只包含最重要的洞察和决策，约500字
@@ -397,7 +456,30 @@ insight / fleeting
         course = self.get_latest_course()
         parsed = self.parse_course(course)
 
-        content = f"""## Task
+        # 读取模板文件
+        template_path = self.template / 'course-template.md'
+        template_content = self.read_file(template_path)
+
+        if template_content:
+            # 使用模板格式，替换变量
+            content = template_content
+            # 保留用户已填写的Task、Focus、Note
+            content = content.replace('[在这里填写你的长期目标]', parsed.get('task', '').strip() or '[在这里填写你的长期目标]')
+            content = content.replace('[在这里填写你的近期关注话题]', parsed.get('focus', '').strip() or '[在这里填写你的近期关注话题]')
+            content = content.replace('[每日根据探讨话题，写下个人观点或偏好。明天AI助手会通过Note更加明白你的需求，确保你在长期目标正确的轨道上]',
+                                    parsed.get('note', '').strip() or '[每日根据探讨话题，写下个人观点或偏好]')
+            # 填充Reference
+            reference_section = f"""## Reference参考文档
+- 今日sounding: charts/{self.today}_sounding.md
+- 今日知识图谱: logbook/{self.today}/map.canvas
+"""
+            content = content.replace('## Reference参考文档\n[在这里放上你希望agent重点参考的文件/网页/文本等资料]', reference_section)
+            # 填充Summary和Next
+            content = content.replace('[每日总结，由系统自动填充]', summary)
+            content = content.replace('[下一步计划，由系统自动填充]', next_actions)
+        else:
+            # 模板不存在时使用默认格式
+            content = f"""## Task
 {parsed.get('task', '').strip()}
 
 ## Focus
@@ -421,6 +503,35 @@ insight / fleeting
         filepath = self.navigation / f"{self.today}_course.md"
         self.write_file(filepath, content)
         return str(filepath)
+
+    def get_analysis_templates(self):
+        """
+        获取harbor/frameworks中的分析模板列表
+        供@analysis命令使用
+        """
+        frameworks_dir = self.harbor / 'frameworks'
+        templates = []
+
+        if frameworks_dir.exists():
+            # 获取所有markdown文件
+            for template_file in frameworks_dir.glob("*.md"):
+                template_info = {
+                    'name': template_file.stem,
+                    'path': str(template_file),
+                    'full_name': template_file.name
+                }
+                # 尝试读取文件的第一行作为描述
+                content = self.read_file(template_file)
+                if content:
+                    first_line = content.split('\n')[0].strip()
+                    # 如果第一行是标题，去掉#号
+                    if first_line.startswith('#'):
+                        template_info['description'] = first_line.lstrip('#').strip()
+                    else:
+                        template_info['description'] = first_line[:100]  # 前100个字符
+                templates.append(template_info)
+
+        return templates
 
     def get_status(self):
         """获取当前状态"""

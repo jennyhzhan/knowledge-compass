@@ -100,6 +100,7 @@ hi compass, 帮我初始化
 ```
 
 系统会自动：
+
 - 创建文件夹结构（charts, logbook, harbor, navigation, template）
 - 创建模板文件
 - 生成昨天日期的 `navigation/YYYY-MM-DD_course.md`
@@ -107,6 +108,7 @@ hi compass, 帮我初始化
 ### 填写初始配置
 
 打开自动生成的 `navigation/昨天日期_course.md`（例如：`2026-02-05_course.md`），填写：
+
 - **Task（长期目标）**：你希望长期关注和实现的目标
 - **Focus（近期关注）**：最近1-2周重点关注的话题和方向
 
@@ -294,13 +296,15 @@ python compass.py @navigation   # 生成今日海图
 - Obsidian（知识库）
 - Claude API（AI分析和搜索）
 
-## 模板推荐
+## 模板使用
 
-系统使用三个核心模板：
+系统使用三个默认模板，所有模版均可在template文件夹中自由定义：
 
 - `course-template.md` - 每日工作方向和总结
 - `sounding-template.md` - 每日信息扫描和分析
 - `card-template.md` - 知识卡片格式
+
+深度分析 `@analysis` 可以在harbor/frameworks中自定义添加模板
 
 ### course-template.md 示例
 

@@ -48,5 +48,16 @@
     "@harbor": "归档到长期知识库",
     "@analysis": "生成分析报告",
     "@course": "生成今日course文档"
+  },
+  "output_preferences": {
+    "use_emoji": false,
+    "style": "professional",
+    "format": "structured",
+    "guidelines": [
+      "禁止使用emoji表情符号",
+      "保持专业简洁的文字表达",
+      "使用结构化的markdown格式（表格、列表等）",
+      "用文字标记（如'已完成'、'进行中'）代替表情符号"
+    ]
   }
 }
