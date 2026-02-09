@@ -22,6 +22,15 @@ class CompassAssistant:
 
     核心原则（Claude使用指南）：
 
+    0. FOCUS确认流程（@navigation命令执行时）：
+       - 读取最新course文档中的Focus部分
+       - 询问用户："今日Focus是否与昨天一致？"
+       - 如果用户提供新的focus内容，使用新的focus
+       - 如果用户确认沿用，使用前一个course里的focus
+       - 无论哪种情况，都用确定的focus来：
+         1. 生成今日sounding（调用create_sounding_draft(focus_text)）
+         2. 生成今日course的Focus部分（调用create_course_summary(..., focus_text)）
+
     1. COURSE文档生成原则：
        - 保持简洁：Today's Summary约500字，聚焦核心洞察
        - What's Next只列最重要的1-2件事
@@ -187,13 +196,10 @@ class CompassAssistant:
         # card模板
         card_template = self.template / 'card-template.md'
         if not card_template.exists():
-            template_content = """# 标题
+            template_content = """
 
 ## 时间
 YYYY-MM-DD HH:MM
-
-## 类型
-insight / fleeting
 
 ## 内容
 [卡片内容]
@@ -243,6 +249,13 @@ insight / fleeting
             return self.read_file(courses[0])
         return None
 
+    def get_latest_course_path(self):
+        """获取最新的course文档路径"""
+        courses = sorted(self.navigation.glob("*_course.md"), reverse=True)
+        if courses:
+            return courses[0]
+        return None
+
     def get_latest_courses(self, n=3):
         """获取最新的n个course文档"""
         courses = sorted(self.navigation.glob("*_course.md"), reverse=True)
@@ -288,6 +301,7 @@ insight / fleeting
         """获取当前上下文信息（供Claude使用）"""
         course = self.get_latest_course()
         parsed = self.parse_course(course)
+        latest_course_path = self.get_latest_course_path()
 
         context = {
             'date': self.today,
@@ -300,6 +314,8 @@ insight / fleeting
             'sounding_exists': (self.charts / f"{self.today}_sounding.md").exists(),
             'course_exists': (self.navigation / f"{self.today}_course.md").exists(),
             'logbook_path': str(self.logbook / self.today),
+            'latest_course_date': latest_course_path.stem.replace('_course', '') if latest_course_path else None,
+            'focus_confirmation_needed': not (self.navigation / f"{self.today}_course.md").exists(),
             'output_preferences': self.config.get('output_preferences', {
                 'use_emoji': False,
                 'style': 'professional',
@@ -445,13 +461,18 @@ insight / fleeting
 
         return cards
 
-    def create_course_summary(self, summary, next_actions):
+    def create_course_summary(self, summary, next_actions, focus_text=None):
         """
         创建今日course文档（优先使用template/course-template.md格式）
 
         注意：Course应该保持简洁，聚焦核心
         - Today's Summary: 只包含最重要的洞察和决策，约500字
         - What's Next: 只关注未来1-2件最重要的事
+
+        参数:
+        - summary: 今日总结
+        - next_actions: 下一步行动
+        - focus_text: 新的focus内容（如果提供，会更新focus部分）
         """
         course = self.get_latest_course()
         parsed = self.parse_course(course)
@@ -465,7 +486,9 @@ insight / fleeting
             content = template_content
             # 保留用户已填写的Task、Focus、Note
             content = content.replace('[在这里填写你的长期目标]', parsed.get('task', '').strip() or '[在这里填写你的长期目标]')
-            content = content.replace('[在这里填写你的近期关注话题]', parsed.get('focus', '').strip() or '[在这里填写你的近期关注话题]')
+            # 使用新的focus（如果提供）或保留原有的focus
+            final_focus = focus_text if focus_text else parsed.get('focus', '').strip()
+            content = content.replace('[在这里填写你的近期关注话题]', final_focus or '[在这里填写你的近期关注话题]')
             content = content.replace('[每日根据探讨话题，写下个人观点或偏好。明天AI助手会通过Note更加明白你的需求，确保你在长期目标正确的轨道上]',
                                     parsed.get('note', '').strip() or '[每日根据探讨话题，写下个人观点或偏好]')
             # 填充Reference
@@ -479,11 +502,12 @@ insight / fleeting
             content = content.replace('[下一步计划，由系统自动填充]', next_actions)
         else:
             # 模板不存在时使用默认格式
+            final_focus = focus_text if focus_text else parsed.get('focus', '').strip()
             content = f"""## Task
 {parsed.get('task', '').strip()}
 
 ## Focus
-{parsed.get('focus', '').strip()}
+{final_focus}
 
 ## Note
 {parsed.get('note', '').strip()}
