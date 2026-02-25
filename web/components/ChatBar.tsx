@@ -7,7 +7,7 @@ interface ChatBarProps {
   onSend?: (msg: string) => void
 }
 
-export function ChatBar({ placeholder = 'Ask Compass...', onSend }: ChatBarProps) {
+export function ChatBar({ placeholder = 'Ask Compass…', onSend }: ChatBarProps) {
   const [value, setValue] = useState('')
 
   const send = () => {
@@ -17,8 +17,8 @@ export function ChatBar({ placeholder = 'Ask Compass...', onSend }: ChatBarProps
   }
 
   return (
-    <div className="px-4 py-3">
-      <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 focus-within:border-zinc-600 transition-colors">
+    <div className="input-box bg-white rounded-2xl border border-transparent">
+      <div className="flex items-center gap-2 px-4 py-2.5">
         <input
           type="text"
           value={value}
@@ -30,12 +30,12 @@ export function ChatBar({ placeholder = 'Ask Compass...', onSend }: ChatBarProps
             }
           }}
           placeholder={placeholder}
-          className="flex-1 bg-transparent text-zinc-200 placeholder-zinc-600 outline-none text-sm"
+          className="flex-1 bg-transparent text-stone-900 placeholder-stone-400 outline-none text-sm"
         />
         <button
           onClick={send}
           disabled={!value.trim()}
-          className="text-xs text-zinc-500 hover:text-zinc-300 disabled:opacity-30 transition-colors px-2 py-1 border border-zinc-700 rounded"
+          className="shrink-0 h-7 px-3 rounded-lg text-xs font-medium bg-stone-900 text-white disabled:opacity-25 hover:bg-stone-700 transition-colors"
         >
           Send
         </button>

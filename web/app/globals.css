@@ -2,40 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #09090b;
-  --foreground: #fafafa;
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background: #faf9f6;
+  color: #1c1917;
 }
 
 /* Thin scrollbars */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #a8a29e; }
+
+/* Claude-style input shadow system */
+.input-box {
+  box-shadow:
+    0 0.25rem 1.25rem rgba(0,0,0,0.035),
+    0 0 0 0.5px rgba(0,0,0,0.09);
+  transition: box-shadow 0.2s ease;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
+.input-box:hover {
+  box-shadow:
+    0 0.25rem 1.25rem rgba(0,0,0,0.05),
+    0 0 0 0.5px rgba(0,0,0,0.14);
 }
-::-webkit-scrollbar-thumb {
-  background: #3f3f46;
-  border-radius: 2px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #52525b;
+.input-box:focus-within {
+  box-shadow:
+    0 0.25rem 1.25rem rgba(0,0,0,0.075),
+    0 0 0 0.5px rgba(0,0,0,0.20);
 }
 
-/* Prose overrides for dark theme */
+/* Prose overrides for light theme */
 .prose pre {
-  background: #18181b !important;
-  border: 1px solid #27272a;
+  background: #f5f4f2 !important;
+  border: 1px solid #e7e5e4;
 }
 .prose code {
-  background: #18181b;
+  background: #f5f4f2;
+  color: #1c1917;
   padding: 0.1em 0.3em;
   border-radius: 3px;
   font-size: 0.875em;

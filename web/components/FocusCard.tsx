@@ -38,41 +38,41 @@ export function FocusCard({ title, content, onEdit, onAdd }: FocusCardProps) {
     <div className="relative">
       {/* Title row */}
       <button
-        className="w-full flex items-center justify-between px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-zinc-700 transition-colors text-left"
+        className="w-full flex items-center justify-between px-4 py-3 bg-white border border-stone-200 rounded-xl hover:border-stone-300 hover:shadow-sm transition-all text-left"
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         onClick={onClick}
       >
-        <span className="text-sm font-medium text-zinc-300">{title}</span>
-        <span className="text-zinc-500 text-sm ml-3 select-none">{icon}</span>
+        <span className="text-sm font-medium text-stone-700">{title}</span>
+        <span className="text-stone-400 text-sm ml-3 select-none">{icon}</span>
       </button>
 
       {/* Content panel */}
       {expanded && (
         <div
-          className={`bg-zinc-900 border border-zinc-700 rounded-lg p-4 mt-1 ${
-            state === 'hover' ? 'absolute left-0 right-0 z-20 shadow-2xl shadow-black/70' : ''
+          className={`bg-white border border-stone-200 rounded-xl p-4 mt-1 shadow-sm ${
+            state === 'hover' ? 'absolute left-0 right-0 z-20 shadow-lg' : ''
           }`}
           onMouseEnter={state === 'hover' ? onMouseEnter : undefined}
           onMouseLeave={state === 'hover' ? onMouseLeave : undefined}
         >
           {content ? (
-            <div className="prose prose-invert prose-sm max-w-none text-zinc-300 leading-relaxed">
+            <div className="prose prose-stone prose-sm max-w-none text-stone-700 leading-relaxed">
               <ReactMarkdown>{content}</ReactMarkdown>
             </div>
           ) : (
-            <p className="text-zinc-600 text-sm italic">No content yet.</p>
+            <p className="text-stone-400 text-sm italic">No content yet.</p>
           )}
 
           {(onAdd || onEdit) && (
-            <div className="flex gap-3 mt-3 pt-3 border-t border-zinc-800">
+            <div className="flex gap-3 mt-3 pt-3 border-t border-stone-100">
               {onAdd && (
-                <button className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">
+                <button className="text-xs text-stone-400 hover:text-stone-600 transition-colors">
                   + Add
                 </button>
               )}
               {onEdit && (
-                <button className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">
+                <button className="text-xs text-stone-400 hover:text-stone-600 transition-colors">
                   Edit
                 </button>
               )}

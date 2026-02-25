@@ -25,30 +25,32 @@ export default function ChartPage() {
     <AppShell chatPlaceholder="Ask about sounding content…">
       <div className="flex h-full">
         {/* Sidebar */}
-        <aside className="w-56 border-r border-zinc-800 overflow-y-auto shrink-0 flex flex-col">
-          <div className="px-4 py-3 border-b border-zinc-800 shrink-0">
-            <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
+        <aside className="w-52 border-r border-stone-200 overflow-y-auto shrink-0 flex flex-col bg-stone-50/60">
+          <div className="px-4 py-3 border-b border-stone-200 shrink-0">
+            <p className="text-xs font-medium text-stone-400 uppercase tracking-wider">
               Daily Soundings
             </p>
           </div>
 
-          {loading && <p className="p-4 text-zinc-600 text-sm">Loading…</p>}
-          {error && <p className="p-4 text-red-500 text-xs">{error}</p>}
+          {loading && <p className="p-4 text-stone-400 text-sm">Loading…</p>}
+          {error && <p className="p-4 text-red-400 text-xs">{error}</p>}
           {!loading && !error && charts.length === 0 && (
-            <p className="p-4 text-zinc-600 text-sm">No soundings yet.</p>
+            <p className="p-4 text-stone-400 text-sm">No soundings yet.</p>
           )}
 
-          <div className="overflow-y-auto flex-1 divide-y divide-zinc-800/40">
+          <div className="overflow-y-auto flex-1 divide-y divide-stone-100">
             {charts.map((c) => (
               <button
                 key={c.date}
                 onClick={() => setSelected(c)}
-                className={`w-full px-4 py-3 text-left hover:bg-zinc-900 transition-colors ${
-                  selected?.date === c.date ? 'bg-zinc-900 border-l-2 border-blue-500 pl-[14px]' : ''
+                className={`w-full px-4 py-3 text-left hover:bg-stone-100 transition-colors ${
+                  selected?.date === c.date
+                    ? 'bg-white border-l-2 border-stone-700 pl-[14px]'
+                    : ''
                 }`}
               >
-                <p className="text-sm text-zinc-300">{c.date}</p>
-                <p className="text-xs text-zinc-600 mt-0.5 truncate">{c.preview.slice(0, 50)}</p>
+                <p className="text-sm text-stone-700 font-medium">{c.date}</p>
+                <p className="text-xs text-stone-400 mt-0.5 truncate">{c.preview.slice(0, 50)}</p>
               </button>
             ))}
           </div>
@@ -59,17 +61,17 @@ export default function ChartPage() {
           {selected ? (
             <>
               <div className="mb-6">
-                <h1 className="text-lg font-medium text-zinc-200">{selected.date}</h1>
-                <p className="text-xs text-zinc-600 mt-1">Daily Sounding</p>
+                <h1 className="text-lg font-medium text-stone-800">{selected.date}</h1>
+                <p className="text-xs text-stone-400 mt-1">Daily Sounding</p>
               </div>
-              <div className="prose prose-invert prose-sm max-w-none">
+              <div className="prose prose-stone prose-sm max-w-none">
                 <ReactMarkdown>{selected.content}</ReactMarkdown>
               </div>
             </>
           ) : (
             !loading && (
               <div className="h-full flex items-center justify-center">
-                <p className="text-zinc-700">Select a sounding to view</p>
+                <p className="text-stone-300">Select a sounding to view</p>
               </div>
             )
           )}

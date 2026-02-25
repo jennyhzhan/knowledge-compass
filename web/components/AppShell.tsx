@@ -12,30 +12,27 @@ interface AppShellProps {
 
 export function AppShell({ children, chatPlaceholder, onChatSend }: AppShellProps) {
   return (
-    <div className="flex flex-col h-screen bg-black text-zinc-100 overflow-hidden">
+    <div className="flex flex-col h-screen bg-[#faf9f6] text-stone-900 overflow-hidden">
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 shrink-0">
-        <Link
-          href="/"
-          className="flex items-center gap-2 text-zinc-100 hover:text-white transition-colors"
-        >
-          <span className="text-base font-medium tracking-tight">◈ Compass</span>
+      <header className="flex items-center justify-between px-6 py-4 border-b border-stone-200 shrink-0 bg-[#faf9f6]">
+        <Link href="/" className="text-sm font-medium tracking-tight text-stone-700 hover:text-stone-900 transition-colors">
+          ◈ Compass
         </Link>
         <div className="flex items-center gap-2">
-          <button className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors px-3 py-1.5 border border-zinc-800 rounded">
+          <button className="text-xs text-stone-500 hover:text-stone-700 px-3 py-1.5 border border-stone-200 rounded-lg hover:border-stone-300 transition-colors">
             Search
           </button>
-          <button className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors px-3 py-1.5 border border-zinc-800 rounded">
+          <button className="text-xs text-stone-500 hover:text-stone-700 px-3 py-1.5 border border-stone-200 rounded-lg hover:border-stone-300 transition-colors">
             Settings
           </button>
         </div>
       </header>
 
-      {/* Main content — each page controls its own scroll */}
+      {/* Main */}
       <main className="flex-1 min-h-0">{children}</main>
 
       {/* Bottom dock */}
-      <div className="shrink-0 border-t border-zinc-800">
+      <div className="shrink-0 bg-[#faf9f6] border-t border-stone-200 px-4 pt-3 pb-2">
         <ChatBar placeholder={chatPlaceholder} onSend={onChatSend} />
         <NavTabs />
       </div>

@@ -23,52 +23,48 @@ export default function TemplatePage() {
   return (
     <AppShell chatPlaceholder="Ask about templates…">
       <div className="flex h-full">
-        {/* Template list */}
-        <aside className="w-52 border-r border-zinc-800 overflow-y-auto shrink-0">
-          <div className="px-4 py-3 border-b border-zinc-800">
-            <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
-              Templates
-            </p>
+        <aside className="w-52 border-r border-stone-200 overflow-y-auto shrink-0 bg-stone-50/60">
+          <div className="px-4 py-3 border-b border-stone-200">
+            <p className="text-xs font-medium text-stone-400 uppercase tracking-wider">Templates</p>
           </div>
 
-          {loading && <p className="p-4 text-zinc-600 text-sm">Loading…</p>}
+          {loading && <p className="p-4 text-stone-400 text-sm">Loading…</p>}
           {!loading && templates.length === 0 && (
-            <p className="p-4 text-zinc-600 text-sm">No templates found.</p>
+            <p className="p-4 text-stone-400 text-sm">No templates found.</p>
           )}
 
-          <div className="divide-y divide-zinc-800/40">
+          <div className="divide-y divide-stone-100">
             {templates.map((t) => (
               <button
                 key={t.filename}
                 onClick={() => setSelected(t)}
-                className={`w-full px-4 py-3 text-left hover:bg-zinc-900 transition-colors ${
+                className={`w-full px-4 py-3 text-left hover:bg-stone-100 transition-colors ${
                   selected?.filename === t.filename
-                    ? 'bg-zinc-900 border-l-2 border-blue-500 pl-[14px]'
+                    ? 'bg-white border-l-2 border-stone-700 pl-[14px]'
                     : ''
                 }`}
               >
-                <p className="text-sm text-zinc-300">{t.name}</p>
+                <p className="text-sm text-stone-700">{t.name}</p>
               </button>
             ))}
           </div>
         </aside>
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto p-8">
           {selected ? (
             <>
               <div className="mb-6">
-                <h1 className="text-lg font-medium text-zinc-200">{selected.name}</h1>
-                <p className="text-xs text-zinc-600 mt-1 font-mono">{selected.filename}</p>
+                <h1 className="text-lg font-medium text-stone-800">{selected.name}</h1>
+                <p className="text-xs text-stone-400 mt-1 font-mono">{selected.filename}</p>
               </div>
-              <div className="prose prose-invert prose-sm max-w-none">
+              <div className="prose prose-stone prose-sm max-w-none">
                 <ReactMarkdown>{selected.content}</ReactMarkdown>
               </div>
             </>
           ) : (
             !loading && (
               <div className="h-full flex items-center justify-center">
-                <p className="text-zinc-700">Select a template to preview</p>
+                <p className="text-stone-300">Select a template to preview</p>
               </div>
             )
           )}
