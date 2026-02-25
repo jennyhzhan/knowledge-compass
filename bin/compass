@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Compass - Knowledge Management CLI
+# 使用方式：compass @navigation, compass @map, etc.
+
+COMPASS_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+COMPASS_PY="$COMPASS_DIR/compass.py"
+
+# 切换到项目目录
+cd "$COMPASS_DIR" || exit 1
+
+# 如果有参数，传递给 compass.py
+if [ $# -gt 0 ]; then
+    python3 "$COMPASS_PY" "$@"
+else
+    # 无参数时显示状态
+    python3 "$COMPASS_PY" --status
+fi
