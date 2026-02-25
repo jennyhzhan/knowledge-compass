@@ -52,3 +52,12 @@ config.json
 
 # Obsidian specific
 .obsidian/
+
+# Web app
+web/.next/
+web/node_modules/
+web/.env.local
+
+# Server
+server/__pycache__/
+server/.env

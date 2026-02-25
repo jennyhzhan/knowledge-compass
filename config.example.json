@@ -7,6 +7,9 @@
     "navigation": "navigation",
     "template": "template"
   },
+  "user": {
+    "name": "Your Name"
+  },
   "assistant": {
     "name": "Compass",
     "version": "2.0.0"
