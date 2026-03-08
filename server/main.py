@@ -62,9 +62,13 @@ def get_user_config():
     config = load_config()
     user = config.get("user", {})
     assistant = config.get("assistant", {})
+    obsidian_path = config.get("obsidian_path", "")
+    vault_path = Path(obsidian_path) if obsidian_path else None
     return {
         "name": user.get("name") or assistant.get("name") or "there",
         "version": assistant.get("version", "1.0.0"),
+        "vault_name": vault_path.name if vault_path else "",
+        "vault_exists": vault_path.exists() if vault_path else False,
     }
 
 
@@ -107,6 +111,67 @@ def get_today():
             "fleeting": [p.name for p in today_cards["fleeting"]],
         },
     }
+
+
+# ---------------------------------------------------------------------------
+# Today — update task / focus
+# ---------------------------------------------------------------------------
+
+class UpdateTodayRequest(BaseModel):
+    field: str   # "goal" or "focus"
+    value: str
+
+
+def _update_course_section(content: str, section: str, new_value: str) -> str:
+    """Replace the text under a ## Section header in a course file."""
+    header_map = {"goal": "## Goal", "focus": "## Focus"}
+    header = header_map.get(section)
+    if not header:
+        raise ValueError(f"Unknown section: {section}")
+
+    lines = content.split("\n")
+    result = []
+    in_section = False
+    replaced = False
+
+    for line in lines:
+        if line.strip().startswith("##"):
+            if line.strip() == header or line.strip().startswith(header + " "):
+                in_section = True
+                result.append(line)
+                continue
+            else:
+                if in_section and not replaced:
+                    result.append(new_value.strip())
+                    replaced = True
+                in_section = False
+        elif in_section and line.strip() == "---":
+            if not replaced:
+                result.append(new_value.strip())
+                replaced = True
+            in_section = False
+
+        if not in_section or not (in_section and not replaced):
+            result.append(line)
+
+    if in_section and not replaced:
+        result.append(new_value.strip())
+
+    return "\n".join(result)
+
+
+@app.patch("/api/today")
+def update_today(req: UpdateTodayRequest):
+    if req.field not in ("task", "focus"):
+        raise HTTPException(status_code=400, detail="field must be 'task' or 'focus'")
+    compass = get_compass()
+    course_path = compass.get_latest_course_path()
+    if not course_path or not course_path.exists():
+        raise HTTPException(status_code=404, detail="No course file found")
+    content = course_path.read_text(encoding="utf-8")
+    updated = _update_course_section(content, req.field, req.value)
+    course_path.write_text(updated, encoding="utf-8")
+    return {"ok": True}
 
 
 # ---------------------------------------------------------------------------
@@ -217,7 +282,7 @@ def get_chart(date: str):
 def get_courses():
     compass = get_compass()
     courses = []
-    for cp in sorted(compass.navigation.glob("*_course.md"), reverse=True):
+    for cp in sorted(compass.navigation.glob("*course.md"), reverse=True):
         content = compass.read_file(cp)
         parsed = compass.parse_course(content) if content else {}
         date = cp.stem.replace("_course", "")
@@ -325,6 +390,20 @@ def get_templates():
                 }
             )
     return {"templates": templates}
+
+
+# ---------------------------------------------------------------------------
+# Navigation — generate sounding
+# ---------------------------------------------------------------------------
+
+@app.post("/api/navigation/generate")
+def generate_navigation():
+    compass = get_compass()
+    sounding_path = compass.charts / f"{compass.today}_sounding.md"
+    if sounding_path.exists():
+        return {"ok": True, "already_exists": True, "path": str(sounding_path)}
+    path = compass.create_sounding_draft()
+    return {"ok": True, "already_exists": False, "path": str(path)}
 
 
 # ---------------------------------------------------------------------------

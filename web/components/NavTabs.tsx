@@ -4,12 +4,12 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const TABS = [
-  { label: 'Focus', href: '/' },
-  { label: 'Chart', href: '/chart' },
-  { label: 'Logbook', href: '/logbook' },
-  { label: 'Harbor', href: '/harbor' },
-  { label: 'Navigation', href: '/navigation' },
-  { label: 'Template', href: '/template' },
+  { label: 'Focus', href: '/', description: 'Your daily starting point' },
+  { label: 'Chart', href: '/chart', description: 'News updated about today\'s focus' },
+  { label: 'Logbook', href: '/logbook', description: 'Discuss insight and deal with noise' },
+  { label: 'Harbor', href: '/harbor', description: 'Your knowledge repository' },
+  { label: 'Navigation', href: '/navigation', description: 'Summary of Today\'s work' },
+  { label: 'Template', href: '/template', description: 'Structure your thoughts' },
 ]
 
 export function NavTabs() {
@@ -20,7 +20,7 @@ export function NavTabs() {
       {TABS.map((tab) => {
         const active = tab.href === '/' ? pathname === '/' : pathname.startsWith(tab.href)
         return (
-          <Link key={tab.href} href={tab.href}>
+          <Link key={tab.href} href={tab.href} className="relative group">
             <button
               className={`
                 h-7 px-3 rounded-lg text-xs border transition-all active:scale-[0.995]
@@ -31,6 +31,9 @@ export function NavTabs() {
             >
               {tab.label}
             </button>
+            <span className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-white bg-stone-700 rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none z-10">
+              {tab.description}
+            </span>
           </Link>
         )
       })}

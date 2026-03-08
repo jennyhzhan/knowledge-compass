@@ -27,11 +27,13 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 export interface UserConfig {
   name: string
   version: string
+  vault_name: string
+  vault_exists: boolean
 }
 
 export interface TodayData {
   date: string
-  task: string
+  goal: string
   focus: string
   note: string
   sounding: string | null
@@ -59,7 +61,7 @@ export interface Chart {
 export interface Course {
   date: string
   filename: string
-  task: string
+  goal: string
   focus: string
   summary: string
   next: string
@@ -112,3 +114,13 @@ export const fetchHarborFile = (category: string, filename: string) =>
 export const fetchTemplates = () => get<{ templates: Template[] }>('/templates')
 export const createFleetingCard = (title: string, content: string, tags?: string[]) =>
   post<{ path: string; message: string }>('/cards/fleeting', { title, content, tags })
+
+export const generateNavigation = () =>
+  post<{ ok: boolean; already_exists: boolean; path: string }>('/navigation/generate', {})
+
+export const updateTodayField = (field: 'goal' | 'focus', value: string) =>
+  fetch(`/api/today`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ field, value }),
+  }).then((r) => { if (!r.ok) throw new Error('Failed to save') })
